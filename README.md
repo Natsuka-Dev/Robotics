@@ -40,7 +40,7 @@ The arm has 3 links (`L1 = 10`, `L2 = 5`, `L3 = 3`) in a 2D plane.
 5. **Check**: feeding the angles back into forward kinematics must land
    exactly on the target.
 
-Tools used: Pythagoras, SOH CAH TOA, law of cosines.
+Tools used: Pythagoras, SOH CAH TOA, law of cosines, inverse kinematics.
 
 ## Run it
 
