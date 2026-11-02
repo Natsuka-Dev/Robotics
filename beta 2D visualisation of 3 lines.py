@@ -32,7 +32,7 @@ def is_p3_valid(L7, L8):
     hyp = hypotenuse(L7, L8)
     smallest = abs(L1 - L2)
     maximum = L1 + L2
-    if (hyp > maximum + 1e-9 or hyp < smallest - + 1e-9):
+    if (hyp > maximum + 1e-9 or hyp < smallest - 1e-9):
         return False
     return True
 
@@ -44,12 +44,11 @@ def solve(delta):    # solve(-45) should give around (55.9°, −76.6°, −24.3
         print("The red dot is out of range.\n")
         return None
 
-    a1, a2, a3 = law_of_cosines(L7, L8, L9)
-    print(law_of_cosines(L7, L8, L9))
+    a1, a2, a3 = law_of_cosines(L1, L2, L9)
     a4, a5 = right_angled_triangle_angles_using_tangent(L7, L8)
     elbow = a1 + a4
-    hand = a1 - a2
-    finger = delta - a1 - a2
+    hand = a2
+    finger = delta - a2
     return elbow, hand, finger
 
 # Displays a red dot to reach on my file
@@ -63,8 +62,8 @@ def hypotenuse(adj, opp):
 
 # right_angled_triangle_angles_using_tangent returns the angles of a right angled triangle using TOA (tangent = opposide / adjacent)
 def right_angled_triangle_angles_using_tangent(opp, adj):
-    a1 = math.degrees(math.atan2(opp, adj))
-    a2 = math.degrees(math.atan2(adj, opp))
+    a1 = math.degrees(math.atan2(adj, opp))
+    a2 = math.degrees(math.atan2(opp, adj))
     return a1, a2
 
 # law_of_cosines is used to get all of the angle of my triangle only using the lenghts of L1, L2 and L3
