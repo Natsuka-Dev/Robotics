@@ -4,17 +4,27 @@ matplotlib.use("Agg")  # pas de fenêtre, rendu fichier
 import matplotlib.pyplot as plt
 
 L1, L2, L3 = 10, 5, 3
-RX, RY = 6, -4
+RX, RY, RZ = 8, 4, 6
 
-# forward returns the position of the elbow the hand and the finger
-def forward(a1, a2, a3):
-    elbow = (L1 * math.cos(a1), L1 * math.sin(a1)) # elbow = (x, y) du coude
-    hand = (elbow[0] + L2 * math.cos(a1 + a2), elbow[1] + L2 * math.sin(a1 + a2)) # hand = (x, y) de la pince
-    finger = (hand[0] + L3 * math.cos(a1 + a2 + a3), hand[1] + L3 * math.sin(a1 + a2 + a3))
-    return elbow, hand, finger
+# forward returns the position of the shoulder, the elbow and the hand
+def forward(a1, a2, a3, base_angle):
+    shoulder_pos = (L1 * math.cos(a1), L1 * math.sin(a1))
+    elbow_pos = (shoulder_pos[0] + L2 * math.cos(a1 + a2),
+                 shoulder_pos[1] + L2 * math.sin(a1 + a2))
+    hand_pos = (elbow_pos[0] + L3 * math.cos(a1 + a2 + a3),
+                elbow_pos[1] + L3 * math.sin(a1 + a2 + a3))
+    return (to_3d(shoulder_pos[0], shoulder_pos[1], base_angle),
+            to_3d(elbow_pos[0], elbow_pos[1], base_angle),
+            to_3d(hand_pos[0], hand_pos[1], base_angle))
+# to_3d returns the position x, y and y of any point
+def to_3d(dist, height, base_angle):
+    x = (dist * math.cos(base_angle))
+    y = (dist * math.sin(base_angle))
+    z = height
+    return x, y, z
 
 # is_p3_valid is a boolean function which returns False if p3 is unreachable with L1, L2 or True if it is reachable
-def is_p3_valid(L7, L8): # ✅
+def is_p3_valid(L7, L8):
     hyp = hypotenuse(L7, L8)
     smallest = abs(L1 - L2)
     maximum = L1 + L2
@@ -30,28 +40,23 @@ def solve(delta):
         return None
 
     a1, a2, a3 = law_of_cosines(L1, L2, L9)
-    a4, a5 = right_angled_triangle_angles_using_tangent(L7, L8)
-    elbow = a1 + a4
-    hand = -(180 - a2)
-    finger = delta - elbow - hand
-    return elbow, hand, finger
-
-# Displays a red dot to reach on my file
-def red_dot():
-    plt.scatter(RX, RY, color="red", s=20, zorder=5)  # (x, y), couleur, taille (s)
+    a4  = right_angled_triangle_angles_using_tangent(L7, L8)
+    shoulder = a1 + a4
+    elbow = -(180 - a2)
+    hand = delta - shoulder - elbow
+    return shoulder, elbow, hand
 
 # Calculates the hypotenuse of a right angled triangle
 def hypotenuse(adj, opp):
     return math.sqrt(adj**2 + opp**2)
 
 # right_angled_triangle_angles_using_tangent returns the angles of a right angled triangle using TOA (tangent = opposide / adjacent)
-def right_angled_triangle_angles_using_tangent(opp, adj):
-    a1 = math.degrees(math.atan2(adj, opp))
-    a2 = math.degrees(math.atan2(opp, adj))
-    return a1, a2
+def right_angled_triangle_angles_using_tangent(x, y):
+    angle = math.degrees(math.atan2(y, x))
+    return angle
 
 # law_of_cosines is used to get all of the angle of my triangle only using the lenghts of L1, L2 and L3
-def law_of_cosines(a, b, c): # ✅
+def law_of_cosines(a, b, c):
     a1 = math.degrees(math.acos((b**2 - a**2 - c**2)/(-2 * a * c)))
     a3 = math.degrees(math.acos((a**2 - b**2 - c**2)/(-2 * b * c)))
     a2 = 180 - a1 - a3
@@ -59,17 +64,21 @@ def law_of_cosines(a, b, c): # ✅
 
 # inverse_kinematics returns the position X Y of P3 by assuming that the angle of P3 is delta
 def inverse_kinematics(delta):
-    x = RX - (L3 * math.cos(math.radians(delta)))
-    y = RY - (L3 * math.sin(math.radians(delta)))
+    horizontal_dist = hypotenuse(RX, RY)
+    x = horizontal_dist - (L3 * math.cos(math.radians(delta)))
+    y = RZ - (L3 * math.sin(math.radians(delta)))
     return [x, y]
 
 # is_red_dot_valid is a boolean function which returns False if the red dot is unreachable with L1, L2 and L3 or True if it is reachable
 def is_red_dot_valid():
-    hyp = hypotenuse(RX, RY)
+    # horizontal_dist = Distance between 0, 0, 0 and RX,RY,0
+    # Dist = Distance between 0, 0, 0 and RX, RY, RZ
+    horizontal_dist = hypotenuse(RX, RY)
+    dist = hypotenuse(horizontal_dist, RZ)
     smallest = sum(sorted([L1, L2, L3])[:2])
     maximum = max(L1, L2, L3)
     total = L1 + L2 + L3
-    if (hyp > total or hyp < max(maximum - smallest, 0)):
+    if (dist > total or dist < max(maximum - smallest, 0)):
         return False
     return True
 
@@ -81,19 +90,20 @@ def find_best_delta():
         result = solve(i/4)
         if (result == None):
             continue
-        elbow, hand, finger = result
-        if (abs(hand - finger) < best_gap):
+        shoulder, elbow, hand = result
+        if (abs(elbow - hand) < best_gap):
             best_delta = i/4
-            best_gap = abs(hand - finger)
+            best_gap = abs(elbow - hand)
     return best_delta
 
 # draw creates the board and displays the red dot, the grid and my lines L1, L2 and L3
 def draw(a1, a2, a3, name):
-    elbow, hand, finger = forward(a1, a2, a3)
+    base_angle = math.radians(right_angled_triangle_angles_using_tangent(RX, RY)) # axe of rotation
+    shoulder_pos, elbow_pos, hand_pos = forward(a1, a2, a3, base_angle)
     fig = plt.figure() # Creates an empty white paper
-    ax = fig.add_subplot(projection="3d")
-    red_dot()
-    plt.plot([0, elbow[0], hand[0], finger[0]], [0, elbow[1], hand[1], finger[1]], [0, 1, 2, 3], "o-", markersize=2) # trace the ligne. plot taked the list of all the x coordonates, then the list of all the y coordonates
+    ax = fig.add_subplot(projection = "3d")
+    ax.scatter(RX, RY, RZ, color="red", s=20, zorder=5) # Displays a red dot to reach on my file
+    plt.plot([0, shoulder_pos[0], elbow_pos[0], hand_pos[0]], [0, shoulder_pos[1], elbow_pos[1], hand_pos[1]], [0, shoulder_pos[2], elbow_pos[2], hand_pos[2]], "o-", markersize = 4) # trace the ligne. plot taked the list of all the x coordonates, then the list of all the y coordonates
     ax.set_xlim(-20, 20) # fixe la zone visible, de -20 à 20 sur l'axe x
     ax.set_ylim(-20, 20) # fixe la zone visible, de -20 à 20 sur l'axe y
     ax.set_zlim(-20, 20) # fixe la zone visible, de -20 à 20 sur l'axe z
@@ -116,5 +126,6 @@ result = solve(best_delta)
 if result is None:
     print("Target unreachable")
     exit(1)
-elbow, hand, finger = result
-draw(math.radians(elbow), math.radians(hand), math.radians(finger), "/media/share/epitech/robotics/arms/arm3.png")
+shoulder, elbow, hand = result
+print(shoulder, elbow, hand)
+draw(math.radians(shoulder), math.radians(elbow), math.radians(hand), "/media/share/epitech/robotics/arms/arm3.png")
