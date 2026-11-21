@@ -57,16 +57,17 @@ The arm is drawn and saved as `arm3.png`.
 
 | File | Role |
 |------|------|
-| `arms3.py` | Kinematics, solver and drawing for the 3-link arm |
-| `arm3.png` | Latest rendering of the arm |
+| `arm1.py` | Kinematics, solver and drawing for the 3-link arm |
+| `arm2.png` | Latest rendering of the arm |
+| `arm3.png` | My first 3D arm |
 
 ## Roadmap
 
 - [x] Understand the geometry on paper
 - [x] Forward kinematics
-- [ ] Inverse kinematics for 3 links
-- [ ] Automatic approach angle, from above
-- [ ] Handle unreachable targets cleanly
+- [x] Inverse kinematics for 3 links
+- [x] Automatic approach angle, from above
+- [x] Handle unreachable targets cleanly
 - [ ] Go 3D
 - [ ] Build the physical arm
 
