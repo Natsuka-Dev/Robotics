@@ -46,7 +46,7 @@ if  not reachable():
     print("The red dot is not reachable.\n")
     exit(1)
 angle1, angle2 = angles()
-draw(math.radians(angle1), math.radians(angle2), "/media/share/epitech/robotics/arms/arm2.png") # math.radians(30) = 0.5236 = 30 degrés exprimés en radians
+draw(math.radians(angle1), math.radians(angle2), "/media/share/epitech/robotics/arms/arm1.png") # math.radians(30) = 0.5236 = 30 degrés exprimés en radians
 
 # a1 = 0, a2 = 0 : le bras est tendu à l’horizontale, la pince doit être en (1.7, 0).
 # a1 = 90°, a2 = 0 : tendu vers le haut, pince en (0, 1.7).

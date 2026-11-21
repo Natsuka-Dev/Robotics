@@ -115,4 +115,4 @@ if result is None:
     print("Target unreachable")
     exit(1)
 elbow, hand, finger = result
-draw(math.radians(elbow), math.radians(hand), math.radians(finger), "/media/share/epitech/robotics/arms/arm3.png")
+draw(math.radians(elbow), math.radians(hand), math.radians(finger), "/media/share/epitech/robotics/arms/arm2.png")
