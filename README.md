@@ -22,10 +22,10 @@ pick-and-place arm.
 |------|-------|
 | Forward kinematics (angles → position) | ✅ Done |
 | Draw the arm with matplotlib | ✅ Done |
-| Inverse kinematics, 3 links (position → angles) | 🚧 In progress |
-| Choose the best approach angle (grab from above) | 🚧 In progress |
-| Reachability check (is the target in range?) | 🚧 In progress |
-| 3D arm | 🔜 Planned |
+| Inverse kinematics, 3 links (position → angles) | ✅ Done |
+| Choose the best approach angle (grab from above) | ✅ Done |
+| Reachability check (is the target in range?) | ✅ Done |
+| 3D arm | 🚧 In progress |
 | Real hardware (servos) | 🔜 Planned |
 
 ## How it works
