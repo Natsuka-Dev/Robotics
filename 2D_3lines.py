@@ -4,7 +4,7 @@ matplotlib.use("Agg")  # pas de fenêtre, rendu fichier
 import matplotlib.pyplot as plt
 
 L1, L2, L3 = 10, 5, 3
-RX, RY = 14.4, 6.4
+RX, RY = 6, -4
 
 # forward returns the position of the elbow the hand and the finger
 def forward(a1, a2, a3):
@@ -23,7 +23,7 @@ def is_p3_valid(L7, L8): # ✅
     return True
 
 # solve calculates the 3 angles of the arm
-def solve(delta):    # solve(-45) should give around (55.9°, −76.6°, −24.3°)
+def solve(delta):
     L7, L8 = inverse_kinematics(delta) # x, y of P3
     L9 = hypotenuse(L7, L8)
     if not (is_p3_valid(L7, L8)): #checks if the red dot is reachable or not
@@ -38,8 +38,7 @@ def solve(delta):    # solve(-45) should give around (55.9°, −76.6°, −24.3
 
 # Displays a red dot to reach on my file
 def red_dot():
-    plt.scatter(RX, RY, color="red", s=15)  # (x, y), couleur, taille (s)
-    plt.show()
+    plt.scatter(RX, RY, color="red", s=20, zorder=5)  # (x, y), couleur, taille (s)
 
 # Calculates the hypotenuse of a right angled triangle
 def hypotenuse(adj, opp):
@@ -75,19 +74,17 @@ def is_red_dot_valid():
     return True
 
 # calculates delta (best angle possible)
-def delta():
+def find_best_delta():
     best_delta = None
     best_gap = float("inf") # infinity
-    delta = -180
-    for delta in range(-360, 361):
-        result = solve(delta/2)
+    for i in range(-720, 721):
+        result = solve(i/4)
         if (result == None):
             continue
         elbow, hand, finger = result
         if (abs(hand - finger) < best_gap):
-            best_delta = delta/2
+            best_delta = i/4
             best_gap = abs(hand - finger)
-    print(best_delta, best_gap)
     return best_delta
 
 # draw creates the board and displays the red dot, the grid and my lines L1, L2 and L3
@@ -106,7 +103,16 @@ def draw(a1, a2, a3, name):
 if (is_red_dot_valid() == False): #checks if the red dot is reachable or not
     print("The red dot is out of range")
     exit(1)
-
-elbow, hand, finger = solve(delta())
-print(f"Solve(-45) -> {elbow, hand, finger}")
+if (RX < 0):
+    print("Target must be in front of the base")
+    exit(1)
+best_delta = find_best_delta()
+if best_delta is None:
+    print("No angle reaches the target")
+    exit(1)
+result = solve(best_delta)
+if result is None:
+    print("Target unreachable")
+    exit(1)
+elbow, hand, finger = result
 draw(math.radians(elbow), math.radians(hand), math.radians(finger), "/media/share/epitech/robotics/arm3.png")
