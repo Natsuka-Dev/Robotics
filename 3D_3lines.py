@@ -4,7 +4,7 @@ matplotlib.use("Agg")  # pas de fenêtre, rendu fichier
 import matplotlib.pyplot as plt
 
 L1, L2, L3 = 10, 5, 3
-RX, RY, RZ = 8, 4, 6
+RX, RY, RZ = 9.5, -4.8, 7
 
 # forward returns the position of the shoulder, the elbow and the hand
 def forward(a1, a2, a3, base_angle):
@@ -16,6 +16,7 @@ def forward(a1, a2, a3, base_angle):
     return (to_3d(shoulder_pos[0], shoulder_pos[1], base_angle),
             to_3d(elbow_pos[0], elbow_pos[1], base_angle),
             to_3d(hand_pos[0], hand_pos[1], base_angle))
+
 # to_3d returns the position x, y and y of any point
 def to_3d(dist, height, base_angle):
     x = (dist * math.cos(base_angle))
